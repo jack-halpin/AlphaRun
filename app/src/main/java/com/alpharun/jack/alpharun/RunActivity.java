@@ -1,5 +1,6 @@
 package com.alpharun.jack.alpharun;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
@@ -19,19 +20,22 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class RunActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     protected static String TAG = "RunActivity";
+
+    //Code for Permission request used to check if user has given permission for GPS
     protected static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
-    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5000;
-    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
-            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
-    //Users current location
-    protected Location mLastLocation;
+    //Variables for controlling how fast the location update intervals are
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5000;
+    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+
 
 
     //TextViews for showing location
@@ -40,40 +44,48 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
     protected TextView mDistanceText;
     protected Boolean mRequestingLocationUpdates;
 
-
     //Strings
-    protected String mLatitudeLabel;
-    protected String mLongitudeLabel;
+    protected String mLatitudeLabel = "Latitude: ";
+    protected String mLongitudeLabel = "Longtitude";
     protected String mLastUpdateTime;
+
     //Location variables
     protected Location mCurrentLocation;
+    protected Location mLastLocation;
+    protected ArrayList<Location> coordinates = new ArrayList<Location>();
 
+
+    //The distance the user has run.
     protected int runDistance = 0;
 
     //GoogleApiClient object to be used
     protected GoogleApiClient mGoogleApiClient;
 
     //LocationRequest used by FusedAPI in order to get coordinate updates at intervals
-    LocationRequest mLocationRequest = new LocationRequest();
+    protected LocationRequest mLocationRequest = new LocationRequest();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_run);
 
-        mLatitudeLabel = "Latitude: ";
-        mLongitudeLabel = "Longitude: ";
+
+
+        //Get the textview objects to enter run details.
         mLatitudeText = (TextView) findViewById((R.id.latitude_text));
         mLongitudeText = (TextView) findViewById((R.id.longtitude_text));
         mDistanceText = (TextView) findViewById((R.id.distance_text));
 
-        mRequestingLocationUpdates = false;
+        //true to automatically start recording data, false to wait for a callback (button press for example)
+        mRequestingLocationUpdates = true;
+
         //Before the app runs we want to make sure that the app has the permission to track location.
         //For the sake of running accuracy we're going to be using FINE_LOCATION
-
         //Android 23 and onwards: Need to check permissions at runtime.
         int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
 
+
+        //TODO: Hande the event that the user denies access to GPS
         //If the permission is denied we have to request it.
         if (permissionCheck == PackageManager.PERMISSION_DENIED){
             ActivityCompat.requestPermissions(this,
@@ -81,22 +93,11 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
 
-        buildGoogleApiClient();
-        //Get the Button on the page and create the listener to get the get the last location
-        final Button runButton = (Button) findViewById(R.id.run_button);
-        runButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Perform action on click
-                startLocationUpdates();
-            }
-        });
-
         // Create an instance of GoogleAPIClient.
-
-
-
+        buildGoogleApiClient();
     }
 
+    //Builds the Google API client instance
     private void buildGoogleApiClient(){
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -107,30 +108,20 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
         }
         createLocationRequest();
     }
-    private void getLastLocation(){
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-            mLatitudeText.setText(String.format("%s: %f", mLatitudeLabel,
-                    mLastLocation.getLatitude()));
-            mLongitudeText.setText(String.format("%s: %f", mLongitudeLabel,
-                    mLastLocation.getLongitude()));
-        } else {
-            Toast.makeText(this, "No Location Detected", Toast.LENGTH_LONG).show();
-        }
-    }
 
-    //When a location update occurs we need to update the textview fields with the information
+    //When a location update occurs we need to update the textview (UI) fields with the information
     private void updateUI(){
         Log.e(TAG, "UpdateUI called");
         mLatitudeText.setText(String.format("%s: %f", mLatitudeLabel,
                 mCurrentLocation.getLatitude()));
         mLongitudeText.setText(String.format("%s: %f", mLongitudeLabel,
                 mCurrentLocation.getLongitude()));
-        mDistanceText.setText(String.format("%s: %f", "Distance: ",
-                Integer.toString(runDistance)));
+        mDistanceText.setText(String.format("%s: %d", "Distance: ",
+                runDistance));
     }
 
     //Callback method for when the user chooses to set the permission
+    //TODO: Move asking permission to the beginning of the app (MainActivity)
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -235,8 +226,12 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
         mLastLocation = mCurrentLocation;
         mCurrentLocation = location;
 
+        //add the location to the list
+        coordinates.add(location);
         if (mLastLocation != null){
             //Get the distance between the two points
+
+            //TODO: (Improve Accuracy) In order to get the most accuracy, have to put some measure in that checks if the points are too far apart.
             Float d = distFrom(mLastLocation.getLatitude(), mLastLocation.getLongitude(), mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
             Log.e(TAG, "Distance = " + d);
             runDistance = runDistance + Math.round(d);
@@ -259,6 +254,8 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
     }
 
 
+    //Function for calculating the distnace in meters between two points. Need to investiage if this is good
+    //Just copied from SO.
     public static float distFrom(double lat1, double lng1, double lat2, double lng2) {
         double earthRadius = 6371000; //meters
         double dLat = Math.toRadians(lat2-lat1);
@@ -272,5 +269,25 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
         return dist;
     }
 
+    //This method is called when the run is finished. Run should be saved to SQLite entry
+    //and information passed to next intent
+    public void stopRunButtonCallback(View view){
+        //Stop the updates
+        stopLocationUpdates();
+
+        //TODO: Pass information to SQLite server
+
+        //Pass information to the summary screen (could also get the summary screen to read last
+        //entry to the database
+        Intent intent = new Intent(this, RunSummaryActivity.class);
+        intent.putExtra("RUN_DISTANCE", runDistance);
+        intent.putExtra("COORD LIST", coordinates);
+        startActivity(intent);
+        finish();
+    }
+
+    private void stopLocationUpdates(){
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
 
 }
