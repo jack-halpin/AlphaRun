@@ -13,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Get the database ready
-        DBManager db = new DBManager();
+        //DBManager db = new DBManager();
     }
 
     public void startRunCallback(View view){
