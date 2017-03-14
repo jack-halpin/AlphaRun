@@ -198,6 +198,7 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
             //TODO: (Improve Accuracy) In order to get the most accuracy, have to put some measure in that checks if the points are too far apart.
             Float d = distFrom(mLastLocation.getLatitude(), mLastLocation.getLongitude(), mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
             Log.e(TAG, "Distance = " + d);
+            Log.e(TAG, "Location Accuracy: " + location.getAccuracy());
             runDistance = runDistance + Math.round(d);
             Log.e(TAG, "Run Distance = " + runDistance);
         }

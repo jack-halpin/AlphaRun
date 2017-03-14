@@ -16,21 +16,21 @@ public class RunDbHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Runtracker.db";
 
-    public static final String SQL_CREATE_TABLES = "CREATE TABLE " + RunTrackerContract.RunEntry.TABLE_NAME + " (" +
+    public static final String SQL_CREATE_RUNENTRY_TABLE = "CREATE TABLE " + RunTrackerContract.RunEntry.TABLE_NAME + " (" +
             RunTrackerContract.RunEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             RunTrackerContract.RunEntry.TIME_COLUMN + " INTEGER," +
-            RunTrackerContract.RunEntry.DISTANCE_COLUMN + " INTEGER)" + "; " +
+            RunTrackerContract.RunEntry.DISTANCE_COLUMN + " INTEGER)" + "; ";
 
-            "CREATE TABLE " + RunTrackerContract.LocationEntry.TABLE_NAME + " (" +
+    public static final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE " + RunTrackerContract.LocationEntry.TABLE_NAME + " (" +
             RunTrackerContract.LocationEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            RunTrackerContract.LocationEntry.LONGTITUDE_COLUMN + " INTEGER," +
-            RunTrackerContract.LocationEntry.LATITUDE_COLUMN + " INTEGER," +
+            RunTrackerContract.LocationEntry.LONGTITUDE_COLUMN + " REAL," +
+            RunTrackerContract.LocationEntry.LATITUDE_COLUMN + " REAL," +
             RunTrackerContract.LocationEntry.RUN_ID_COLUMN + " INTEGER," +
             "FOREIGN KEY(" + RunTrackerContract.LocationEntry.RUN_ID_COLUMN + ") REFERENCES " +
             RunTrackerContract.RunEntry.TABLE_NAME + "(" + RunTrackerContract.RunEntry._ID + "));";
 
-    private static final String SQL_DELETE_ENTRIES =
-            "DROP TABLE IF EXISTS " + RunTrackerContract.RunEntry.TABLE_NAME;
+    private static final String SQL_DELETE_RUNENTRY = "DROP TABLE IF EXISTS " + RunTrackerContract.RunEntry.TABLE_NAME + "; ";
+    private static final String SQL_DELETE_LOCATIONENTRY = "DROP TABLE IF EXISTS " + RunTrackerContract.LocationEntry.TABLE_NAME;
 
 
 
@@ -44,8 +44,10 @@ public class RunDbHelper extends SQLiteOpenHelper {
     //This method is called when the databse is first created. Need to put the query for the creation
     //of tables or entry of seed data (if any exists)
     public void onCreate(SQLiteDatabase db){
-        db.execSQL(SQL_DELETE_ENTRIES);
-        db.execSQL(SQL_CREATE_TABLES);
+        db.execSQL(SQL_DELETE_RUNENTRY);
+        db.execSQL(SQL_DELETE_LOCATIONENTRY);
+        db.execSQL(SQL_CREATE_RUNENTRY_TABLE);
+        db.execSQL(SQL_CREATE_LOCATION_TABLE);
 
     }
 
@@ -54,7 +56,8 @@ public class RunDbHelper extends SQLiteOpenHelper {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
         Log.e( "deleteding: ", "db");
-        db.execSQL(SQL_DELETE_ENTRIES);
+        db.execSQL(SQL_DELETE_RUNENTRY);
+        db.execSQL(SQL_DELETE_LOCATIONENTRY);
         onCreate(db);
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
