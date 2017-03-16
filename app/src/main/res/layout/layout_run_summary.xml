@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="80dp">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.4"
+        android:orientation="vertical">
+
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.4"
+            android:paddingTop="6dp"
+            android:textAlignment="center"
+            android:gravity="bottom"
+            android:text="Monday"/>
+
+        <TextView
+            android:id="@+id/run_summary_distance"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+
+            android:layout_weight="0.6"
+            android:textAlignment="center"
+            android:gravity="top"
+            android:text="5.00Km"
+            android:textSize="12pt"/>
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="0dp"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3"
+        android:src="@drawable/clear"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.4">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.33"
+            android:gravity="left"
+            android:textAlignment="gravity"
+            android:text="Pace: 0.222"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.33"
+            android:gravity="left"
+            android:textAlignment="gravity"
+            android:text="Time: 6:34"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.33"
+            android:gravity="left"
+            android:textAlignment="gravity"
+            android:text="Temp: 32C"/>
+    </LinearLayout>
+
+
+</LinearLayout>

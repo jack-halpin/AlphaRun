@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.alpharun.jack.alpharun.R;
 
+
 public class WelcomeActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
