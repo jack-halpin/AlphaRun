@@ -1,12 +1,9 @@
 package com.alpharun.jack.alpharun.Activities;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -22,6 +19,9 @@ import com.google.android.gms.location.LocationServices;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
+
+import static com.alpharun.jack.alpharun.Utilities.RunCalculations.distFrom;
 
 public class RunActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -56,6 +56,9 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
     //The distance the user has run.
     protected int runDistance = 0;
 
+    //The time the run was started
+    private long timeStart;
+
     //GoogleApiClient object to be used
     protected GoogleApiClient mGoogleApiClient;
 
@@ -68,6 +71,9 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
         setContentView(R.layout.activity_run);
 
 
+        //Set the time the run was started
+        timeStart = System.currentTimeMillis()/1000;
+        Log.e("Run Start time: ", Long.toString(timeStart));
 
         //Get the textview objects to enter run details.
         mLatitudeText = (TextView) findViewById((R.id.latitude_text));
@@ -196,7 +202,7 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
             //Get the distance between the two points
 
             //TODO: (Improve Accuracy) In order to get the most accuracy, have to put some measure in that checks if the points are too far apart.
-            Float d = distFrom(mLastLocation.getLatitude(), mLastLocation.getLongitude(), mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            Float d = distFrom(mLastLocation, mCurrentLocation);
             Log.e(TAG, "Distance = " + d);
             Log.e(TAG, "Location Accuracy: " + location.getAccuracy());
             runDistance = runDistance + Math.round(d);
@@ -219,20 +225,7 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
     }
 
 
-    //Function for calculating the distnace in meters between two points. Need to investiage if this is good
-    //Just copied from SO.
-    public static float distFrom(double lat1, double lng1, double lat2, double lng2) {
-        double earthRadius = 6371000; //meters
-        double dLat = Math.toRadians(lat2-lat1);
-        double dLng = Math.toRadians(lng2-lng1);
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLng/2) * Math.sin(dLng/2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        float dist = (float) (earthRadius * c);
 
-        return dist;
-    }
 
     //This method is called when the run is finished. Run should be saved to SQLite entry
     //and information passed to next intent

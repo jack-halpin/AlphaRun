@@ -1,13 +1,12 @@
 package com.alpharun.jack.alpharun.Activities;
 
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -23,12 +22,11 @@ public class RunSummaryActivity extends AppCompatActivity {
     protected TextView distanceSummary;
     protected TextView timeSummary;
 
+    private int runDistance;
     protected SQLiteDatabase db;
     protected long runId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_run_summary);
         Stetho.initializeWithDefaults(this);
@@ -38,7 +36,7 @@ public class RunSummaryActivity extends AppCompatActivity {
         //Assign UI elements to variables
         distanceSummary = (TextView) findViewById(R.id.summary_distance_text);
         timeSummary = (TextView) findViewById(R.id.summary_time_text);
-        int runDistance = extras.getInt("RUN_DISTANCE");
+        runDistance = extras.getInt("RUN_DISTANCE");
 
 
         ArrayList<Location> l = (ArrayList<Location>) extras.getSerializable("COORD LIST");
@@ -88,9 +86,9 @@ public class RunSummaryActivity extends AppCompatActivity {
                     null
             );
 
-            //Move the cursor to the last item
-            cursor.moveToLast();
-            runId = cursor.getLong(cursor.getColumnIndexOrThrow(RunTrackerContract.RunEntry._ID));
+            //Get the id of the current run. This will be equal to the number of current runs in the database + 1
+            runId = cursor.getCount() + 1;
+
             Log.e("ID of last run: ", Long.toString(runId));
         }
 
@@ -99,16 +97,23 @@ public class RunSummaryActivity extends AppCompatActivity {
             //For each location in the ArrayList passed into the database insert it into the database
             ArrayList<Location> locations = params[0];
 
-            for(Location loc : locations){
+            //Insert the summary for the current run
+            ContentValues values = new ContentValues();
+            values.put(RunTrackerContract.RunEntry.DISTANCE_COLUMN, runDistance);
+            values.put(RunTrackerContract.RunEntry.TIME_COLUMN, 39);
+            long newRowId = db.insert(RunTrackerContract.RunEntry.TABLE_NAME, null, values);
 
-                ContentValues values = new ContentValues();
+            for(Location loc : locations){
+                values = new ContentValues();
                 values.put(RunTrackerContract.LocationEntry.LATITUDE_COLUMN, loc.getLatitude());
                 values.put(RunTrackerContract.LocationEntry.LONGTITUDE_COLUMN, loc.getLongitude());
+                values.put(RunTrackerContract.LocationEntry.TIMESTAMP_SEC, loc.getTime()/1000);
                 values.put(RunTrackerContract.LocationEntry.RUN_ID_COLUMN, runId);
                 db.insert(RunTrackerContract.LocationEntry.TABLE_NAME, null, values);
             }
 
 
+            //Update the run information
 
 
             return null;

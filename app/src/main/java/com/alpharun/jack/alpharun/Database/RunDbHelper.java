@@ -1,10 +1,8 @@
 package com.alpharun.jack.alpharun.Database;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.location.Location;
 import android.util.Log;
 
 /**
@@ -19,12 +17,17 @@ public class RunDbHelper extends SQLiteOpenHelper {
     public static final String SQL_CREATE_RUNENTRY_TABLE = "CREATE TABLE " + RunTrackerContract.RunEntry.TABLE_NAME + " (" +
             RunTrackerContract.RunEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             RunTrackerContract.RunEntry.TIME_COLUMN + " INTEGER," +
+            RunTrackerContract.RunEntry.WEATHER_COLUMN + " TEXT," +
             RunTrackerContract.RunEntry.DISTANCE_COLUMN + " INTEGER)" + "; ";
 
     public static final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE " + RunTrackerContract.LocationEntry.TABLE_NAME + " (" +
             RunTrackerContract.LocationEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             RunTrackerContract.LocationEntry.LONGTITUDE_COLUMN + " REAL," +
             RunTrackerContract.LocationEntry.LATITUDE_COLUMN + " REAL," +
+            RunTrackerContract.LocationEntry.TIMESTAMP_SEC + " INTEGER," +
+
+            RunTrackerContract.LocationEntry.RELATIVE_DISTANCE + " REAL," +
+            RunTrackerContract.LocationEntry.CURRENT_PACE + " REAL," +
             RunTrackerContract.LocationEntry.RUN_ID_COLUMN + " INTEGER," +
             "FOREIGN KEY(" + RunTrackerContract.LocationEntry.RUN_ID_COLUMN + ") REFERENCES " +
             RunTrackerContract.RunEntry.TABLE_NAME + "(" + RunTrackerContract.RunEntry._ID + "));";
