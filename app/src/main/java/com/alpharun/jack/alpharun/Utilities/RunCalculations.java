@@ -33,21 +33,13 @@ public class RunCalculations {
 
     //Function for calculating the pace of the runner based on a previous coordinate and their
     //current coordinate
-    public static double getPaceFromLocation(Location prevLoc, Location currLoc){
-        //Get current coordinates
-        double lat1 = prevLoc.getLatitude();
-        double lng1 = prevLoc.getLongitude();
-        double lat2 = currLoc.getLatitude();
-        double lng2 = currLoc.getLongitude();
+    //EDIT: Might just be easier to calculate the pace of a current run based on the distance travelled
+    //Divited by the time of the current run considering these values are kept track of during the run.
+    public static double getPaceFromLocation(int distance, long time){
+        //Pace in s/Km
+        double pace = time/distance;
 
-        //Get the distance in meters between the two points
-        double distance = distFrom(prevLoc, currLoc);
-
-        //Get the time different
-        double timeDifference = currLoc.getTime() - prevLoc.getTime();
-
-        //Pace is given as average speed which is distance/time
-        double pace = distance/timeDifference; //m/s
-        return pace;
+        //Divide by 60 to get Min/Km
+        return pace / 60;
     }
 }

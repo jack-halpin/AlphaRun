@@ -59,6 +59,9 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
     //The time the run was started
     private long timeStart;
 
+    //The tracked pace of the run
+    private double trackedPace; //Distance / time
+
     //GoogleApiClient object to be used
     protected GoogleApiClient mGoogleApiClient;
 
@@ -198,15 +201,19 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
 
         //add the location to the list
         coordinates.add(location);
+
+        //TODO: (Improve Accuracy) In order to get the most accuracy, have to put some measure in that checks if the points are too far apart.
         if (mLastLocation != null){
             //Get the distance between the two points
-
-            //TODO: (Improve Accuracy) In order to get the most accuracy, have to put some measure in that checks if the points are too far apart.
             double d = distFrom(mLastLocation, mCurrentLocation);
             Log.e(TAG, "Distance = " + d);
             Log.e(TAG, "Location Accuracy: " + location.getAccuracy());
             runDistance = runDistance + d;
             Log.e(TAG, "Run Distance = " + runDistance);
+
+            //Calculate the current pace which is equal to the distance over the time
+            long timeLapsedInSeconds = (System.currentTimeMillis() / 1000) - timeStart;
+
         }
 
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
