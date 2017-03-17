@@ -23,8 +23,14 @@ public class RunSummaryActivity extends AppCompatActivity {
     protected TextView timeSummary;
 
     private int runDistance;
-    protected SQLiteDatabase db;
-    protected long runId;
+    private SQLiteDatabase db;
+
+    private int runId;
+    private long startTime;
+    private long endTime;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,9 +43,11 @@ public class RunSummaryActivity extends AppCompatActivity {
         distanceSummary = (TextView) findViewById(R.id.summary_distance_text);
         timeSummary = (TextView) findViewById(R.id.summary_time_text);
         runDistance = extras.getInt("RUN_DISTANCE");
+        startTime = extras.getLong("START_TIME");
+        endTime = extras.getLong("END_TIME");
 
 
-        ArrayList<Location> l = (ArrayList<Location>) extras.getSerializable("COORD LIST");
+        ArrayList<Location> l = (ArrayList<Location>) extras.getSerializable("COORD_LIST");
 
         distanceSummary.setText("Distance: " + runDistance);
         timeSummary.setText(String.valueOf(l.get(0).getLatitude()));
@@ -48,17 +56,9 @@ public class RunSummaryActivity extends AppCompatActivity {
         RunDbHelper runDbHelper = new RunDbHelper(this);
 
         db = runDbHelper.getWritableDatabase();
-        runDbHelper.onCreate(db);
-
-
-        //Quick test for the databse
-        ContentValues values = new ContentValues();
-        values.put(RunTrackerContract.RunEntry.DISTANCE_COLUMN, 300);
-        values.put(RunTrackerContract.RunEntry.TIME_COLUMN, 39);
-        long newRowId = db.insert(RunTrackerContract.RunEntry.TABLE_NAME, null, values);
-
         DatabaseSynchronize dbSync = new DatabaseSynchronize();
         dbSync.execute(l);
+
     }
 
     public class DatabaseSynchronize extends AsyncTask<ArrayList<Location>, Void, Void>{
@@ -100,8 +100,8 @@ public class RunSummaryActivity extends AppCompatActivity {
             //Insert the summary for the current run
             ContentValues values = new ContentValues();
             values.put(RunTrackerContract.RunEntry.DISTANCE_COLUMN, runDistance);
-            values.put(RunTrackerContract.RunEntry.TIME_COLUMN, 39);
-            long newRowId = db.insert(RunTrackerContract.RunEntry.TABLE_NAME, null, values);
+            values.put(RunTrackerContract.RunEntry.TIME_COLUMN, endTime - startTime);
+            db.insert(RunTrackerContract.RunEntry.TABLE_NAME, null, values);
 
             for(Location loc : locations){
                 values = new ContentValues();
@@ -113,9 +113,6 @@ public class RunSummaryActivity extends AppCompatActivity {
             }
 
 
-            //Update the run information
-
-
             return null;
         }
 
@@ -123,7 +120,7 @@ public class RunSummaryActivity extends AppCompatActivity {
         protected void onPostExecute(){
             //Potentially update the UI here
             //Close the connection to the database
-
+            db.close();
 
         }
     }

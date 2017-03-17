@@ -18,7 +18,8 @@
             android:paddingTop="6dp"
             android:textAlignment="center"
             android:gravity="bottom"
-            android:text="Monday"/>
+            android:text="Monday"
+            android:id="@+id/run_summary_date" />
 
         <TextView
             android:id="@+id/run_summary_distance"
@@ -42,7 +43,8 @@
         android:paddingRight="16dp"
         android:layout_height="match_parent"
         android:layout_weight="0.3"
-        android:src="@drawable/clear"/>
+        android:src="@drawable/clear"
+        android:id="@+id/summary_weather_image" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -59,21 +61,24 @@
             android:layout_weight="0.33"
             android:gravity="left"
             android:textAlignment="gravity"
-            android:text="Pace: 0.222"/>
+            android:text="Pace: 0.222"
+            android:id="@+id/run_summary_pace" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.33"
             android:gravity="left"
             android:textAlignment="gravity"
-            android:text="Time: 6:34"/>
+            android:text="Time: 6:34"
+            android:id="@+id/run_summary_time" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.33"
             android:gravity="left"
             android:textAlignment="gravity"
-            android:text="Temp: 32C"/>
+            android:text="Temp: 32C"
+            android:id="@+id/run_summary_temp" />
     </LinearLayout>
 
 

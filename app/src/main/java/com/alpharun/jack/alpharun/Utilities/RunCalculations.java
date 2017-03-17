@@ -10,7 +10,7 @@ public class RunCalculations {
 
     //Function for calculating the distnace in meters between two points. Need to investiage if this is good
     //Just copied from SO.
-    public static float distFrom(Location prevLoc, Location currLoc) {
+    public static double distFrom(Location prevLoc, Location currLoc) {
 
         //Get current coordinates
         double lat1 = prevLoc.getLatitude();
@@ -40,7 +40,14 @@ public class RunCalculations {
         double lat2 = currLoc.getLatitude();
         double lng2 = currLoc.getLongitude();
 
-        //Get the distance in meters
-        return lat1;
+        //Get the distance in meters between the two points
+        double distance = distFrom(prevLoc, currLoc);
+
+        //Get the time different
+        double timeDifference = currLoc.getTime() - prevLoc.getTime();
+
+        //Pace is given as average speed which is distance/time
+        double pace = distance/timeDifference; //m/s
+        return pace;
     }
 }

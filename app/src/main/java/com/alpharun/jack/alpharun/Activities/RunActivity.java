@@ -54,7 +54,7 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
 
 
     //The distance the user has run.
-    protected int runDistance = 0;
+    protected double runDistance = 0;
 
     //The time the run was started
     private long timeStart;
@@ -108,7 +108,7 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
                 mCurrentLocation.getLatitude()));
         mLongitudeText.setText(String.format("%s: %f", mLongitudeLabel,
                 mCurrentLocation.getLongitude()));
-        mDistanceText.setText(String.format("%s: %d", "Distance: ",
+        mDistanceText.setText(String.format("%s: %4.2f", "Distance: ",
                 runDistance));
     }
 
@@ -202,10 +202,10 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
             //Get the distance between the two points
 
             //TODO: (Improve Accuracy) In order to get the most accuracy, have to put some measure in that checks if the points are too far apart.
-            Float d = distFrom(mLastLocation, mCurrentLocation);
+            double d = distFrom(mLastLocation, mCurrentLocation);
             Log.e(TAG, "Distance = " + d);
             Log.e(TAG, "Location Accuracy: " + location.getAccuracy());
-            runDistance = runDistance + Math.round(d);
+            runDistance = runDistance + d;
             Log.e(TAG, "Run Distance = " + runDistance);
         }
 
@@ -239,7 +239,9 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
         //entry to the database
         Intent intent = new Intent(this, RunSummaryActivity.class);
         intent.putExtra("RUN_DISTANCE", runDistance);
-        intent.putExtra("COORD LIST", coordinates);
+        intent.putExtra("COORD_LIST", coordinates);
+        intent.putExtra("START_TIME", timeStart);
+        intent.putExtra("END_TIME", System.currentTimeMillis()/1000);
         startActivity(intent);
         finish();
     }
