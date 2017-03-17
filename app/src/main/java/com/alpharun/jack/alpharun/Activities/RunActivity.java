@@ -54,7 +54,7 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
 
 
     //The distance the user has run.
-    protected double runDistance = 0;
+    protected double runDistance;
 
     //The time the run was started
     private long timeStart;
@@ -70,7 +70,7 @@ public class RunActivity extends AppCompatActivity implements GoogleApiClient.Co
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_run);
 
-
+        runDistance = 0;
         //Set the time the run was started
         timeStart = System.currentTimeMillis()/1000;
         Log.e("Run Start time: ", Long.toString(timeStart));

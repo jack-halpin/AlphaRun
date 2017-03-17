@@ -22,7 +22,7 @@ public class RunSummaryActivity extends AppCompatActivity {
     protected TextView distanceSummary;
     protected TextView timeSummary;
 
-    private int runDistance;
+    private double runDistance;
     private SQLiteDatabase db;
 
     private int runId;
@@ -42,7 +42,9 @@ public class RunSummaryActivity extends AppCompatActivity {
         //Assign UI elements to variables
         distanceSummary = (TextView) findViewById(R.id.summary_distance_text);
         timeSummary = (TextView) findViewById(R.id.summary_time_text);
-        runDistance = extras.getInt("RUN_DISTANCE");
+        runDistance = extras.getDouble("RUN_DISTANCE");
+        runDistance = Math.round(runDistance * 100.0) / 100.0;
+        Log.e("Run: ", Double.toString(runDistance));
         startTime = extras.getLong("START_TIME");
         endTime = extras.getLong("END_TIME");
 
